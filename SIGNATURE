@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.63.
+signed via the Module::Signature module, version 0.68.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -14,26 +14,26 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 f946fbd0f984058a24e3f21e897a30e05466ac5f Build.PL
-SHA1 e03b7e9b97f55fe64b27afad9a2b8ed9ff855b10 Changes
-SHA1 5ecf683d0174af998b9e210d58e137e1c95448aa LICENSE
+SHA1 8abd2ee7598d3253fa4bcd12ade25630b36f0298 Build.PL
+SHA1 b6d187a4158a0bdfb33a02b0d98f62765de5e845 Changes
+SHA1 4dde25b9538eaab37558ffc59119b7e8e26e47af LICENSE
 SHA1 359b1652ed5bc88b58e84944ecea48225ade0264 MANIFEST
-SHA1 10a099ef113d3f268251f3abb1bcb30af1d7cde0 META.json
-SHA1 9be60ea7d2c0c04a94090503eeb66543c7ae6095 META.yml
-SHA1 5eb18af0e86c4fa622abf1b32bc32e53fa2b5b07 README
+SHA1 3cebf172c57d429cc1b056444738fbb755f8ae7d META.json
+SHA1 03118b0d7a524d61b98201ccc0e56801cf812221 META.yml
+SHA1 bff57a8937b1b748be7acca2ebd28a7c6a1afb7c README
 SHA1 5c50fb93b33c3c87f801cd7e000f92199364c9e2 dist.ini
-SHA1 d3daa441ed5f870fd15ab3185ad54f7a7e3e6967 lib/Smart/Match.pm
-SHA1 32ee0c4fb7d304646f2d46995d60d7be807b8d5b lib/Smart/Match/Overload.pm
+SHA1 c0cbd43aaac75066b593f806bcaaed982bb88576 lib/Smart/Match.pm
+SHA1 993a3090d4e364faf4277970035beb8daef03c12 lib/Smart/Match/Overload.pm
 SHA1 18626e4adb1a6175ce5bcdb621ca7edac07bc5b6 lib/Smart/Match/Overload.xs
-SHA1 9e65f3976c7c7eabaeab878d513ff95b38a07776 t/00-compile.t
-SHA1 9b365443b43c2624b067c79eecd6e5dddb17a5c4 t/10-basics.t
+SHA1 ca41ffd5806caaf9da5dceea1320ae662780e9fc t/00-compile.t
+SHA1 3e18c8be580ff5ebc13969680b99e3ed1f3ec3ae t/10-basics.t
 SHA1 961a1e2c92d836c8cad2d34b784cbc75345dec63 t/release-kwalitee.t
 SHA1 9433c240fe590bc404ab68ff63984df763e347ed t/release-pod-coverage.t
 SHA1 b30cbdfaf935017c4568c0c91b242438cb87786e t/release-pod-syntax.t
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
+Version: GnuPG v1.4.11 (GNU/Linux)
 
-iEYEARECAAYFAk3uqLgACgkQTd+EWiaICwqOtACeOeXiVyhi2cybJyt4TMNOEV/6
-uG8An1l6pIbjTXnkekOS/r4w6B3LZj3d
-=jpl3
+iEYEARECAAYFAk4WTJIACgkQTd+EWiaICwrUAgCfdcD7GQoJYxpKbuYROLZVul7r
+v1wAn2cKh4zd4vkjMlhu+PmCpQwAp1aq
+=OP0W
 -----END PGP SIGNATURE-----

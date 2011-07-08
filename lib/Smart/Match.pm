@@ -1,6 +1,6 @@
 package Smart::Match;
 BEGIN {
-  $Smart::Match::VERSION = '0.002';
+  $Smart::Match::VERSION = '0.003';
 }
 
 use 5.010001;
@@ -24,8 +24,8 @@ use Sub::Exporter -setup => {
 		numwise stringwise
 		string string_length
 		object instance_of ref_type
-		array array_length tuple head sequence
-		hash hash_keys
+		array array_length tuple head sequence contains sorted
+		hash hash_keys hash_values
 	/],
 	groups => {
 		junctive => [qw/any all none one/],
@@ -36,8 +36,8 @@ use Sub::Exporter -setup => {
 		meta     => [qw/match delegate/],
 		string   => [qw/string string_length/],
 		refs     => [qw/object instance_of ref_type/],
-		arrays   => [qw/array array_length tuple head sequence/],
-		hashes   => [qw/hash hash_keys/],
+		arrays   => [qw/array array_length tuple head sequence contains sorted/],
+		hashes   => [qw/hash hash_keys hash_values/],
 	},
 };
 
@@ -186,11 +186,26 @@ sub head {
 	return match { scalar array_length(at_least(scalar @entries)) and [ @{$_}[ 0..$#entries ] ] ~~ @entries };
 }
 
+sub contains {
+	my $matcher = shift;
+	return match { scalar array and List::MoreUtils::any { $_ ~~ $matcher } @{$_} };
+}
+
+sub sorted {
+	my $matcher = shift;
+	return match { scalar array and [ sort @{$_} ] ~~ $matcher };
+}
+
 use constant hash => ref_type('HASH');
 
 sub hash_keys {
 	my $matcher = shift;
-	return match { scalar hash and [ sort keys %{$_} ] ~~ $matcher };
+	return match { scalar hash and [ keys %{$_} ] ~~ $matcher };
+}
+
+sub hash_values {
+	my $matcher = shift;
+	return match { scalar hash and [ values %{$_} ] ~~ $matcher };
 }
 
 1;
@@ -207,7 +222,7 @@ Smart::Match - Smart matching utilities
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 SYNOPSIS
 
@@ -357,9 +372,17 @@ Matches a list whose elements match C<@entries> one by one.
 
 Matches a list whose head elements match C<@entries> one by one.
 
-=head2 sequence($matches)
+=head2 sequence($matcher)
 
 Matches a list whose elements all match C<$matcher>.
+
+=head2 contains($matcher)
+
+Matches a list that contains an element matching C<$matcher>.
+
+=head2 sorted($matcher)
+
+Sorts a list and matches it against C<$matcher>.
 
 =head2 hash()
 
@@ -367,7 +390,11 @@ Matches any unblessed hash.
 
 =head2 hash_keys($matcher)
 
-Match a sorted list of hash keys against $matcher.
+Match a list of hash keys against C<$matcher>.
+
+=head2 hash_values($matches)
+
+Match a list of hash values against C<$matcher>
 
 =head2 match { ... }
 
