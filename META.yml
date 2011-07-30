@@ -28,4 +28,4 @@ requires:
 resources:
   bugtracker: http://rt.cpan.org/Public/Dist/Display.html?Name=Smart-Match
   repository: git://github.com/Leont/smart-match.git
-version: 0.003
+version: 0.004

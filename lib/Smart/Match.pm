@@ -1,6 +1,6 @@
 package Smart::Match;
 BEGIN {
-  $Smart::Match::VERSION = '0.003';
+  $Smart::Match::VERSION = '0.004';
 }
 
 use 5.010001;
@@ -9,7 +9,7 @@ use warnings FATAL => 'all';
 
 use Carp qw/croak/;
 use List::MoreUtils qw//;
-use Scalar::Util qw(blessed looks_like_number);
+use Scalar::Util qw(blessed looks_like_number refaddr);
 
 use Smart::Match::Overload;
 
@@ -24,20 +24,22 @@ use Sub::Exporter -setup => {
 		numwise stringwise
 		string string_length
 		object instance_of ref_type
-		array array_length tuple head sequence contains sorted
-		hash hash_keys hash_values
+		array array_length tuple head sequence contains sorted sorted_by
+		hash hash_keys hash_values sub_hash hashwise
+		address value
 	/],
 	groups => {
 		junctive => [qw/any all none one/],
 		definite => [qw/always never/],
 		boolean  => [qw/true false/],
 		numeric  => [qw/number integer even odd more_than less_than at_least at_most/],
-		compare  => [qw/numwise stringwise/],
+		compare  => [qw/numwise stringwise hashwise/],
 		meta     => [qw/match delegate/],
 		string   => [qw/string string_length/],
 		refs     => [qw/object instance_of ref_type/],
 		arrays   => [qw/array array_length tuple head sequence contains sorted/],
-		hashes   => [qw/hash hash_keys hash_values/],
+		hashes   => [qw/hash hash_keys hash_values sub_hash/],
+		direct   => [qw/address value/],
 	},
 };
 
@@ -164,6 +166,11 @@ sub ref_type {
 	return match { ref eq $type };
 }
 
+sub address {
+	my $addr = refaddr($_[0]);
+	return match { refaddr($_) == $addr };
+}
+
 use constant array => ref_type('ARRAY');
 
 sub array_length {
@@ -178,7 +185,7 @@ sub tuple {
 
 sub sequence {
 	my $matcher = shift;
-	return match { scalar array and not List::MoreUtils::any { not $_ ~~ $matcher } @{$_} };
+	return match { scalar array and List::MoreUtils::all { $_ ~~ $matcher } @{$_} };
 }
 
 sub head {
@@ -187,13 +194,21 @@ sub head {
 }
 
 sub contains {
-	my $matcher = shift;
-	return match { scalar array and List::MoreUtils::any { $_ ~~ $matcher } @{$_} };
+	my @matchers = @_;
+	return match {
+		my $lsh = $_;
+		$_ ~~ array and List::MoreUtils::all { my $matcher = $_; List::MoreUtils::any { $_ ~~ $matcher } @{$lsh} } @matchers;
+	};
 }
 
 sub sorted {
 	my $matcher = shift;
 	return match { scalar array and [ sort @{$_} ] ~~ $matcher };
+}
+
+sub sorted_by {
+	my ($sorter, $matcher) = @_;
+	return match { scalar array and [ sort { $sorter->($a, $b) } @{$_} ] ~~ $matcher };
 }
 
 use constant hash => ref_type('HASH');
@@ -206,6 +221,46 @@ sub hash_keys {
 sub hash_values {
 	my $matcher = shift;
 	return match { scalar hash and [ values %{$_} ] ~~ $matcher };
+}
+
+sub sub_hash {
+	my $hash = shift;
+	return match {
+		my $lhs = $_; # for grep { }
+
+		$lhs ~~ hash and keys %{$lhs} >= keys %{$hash} and List::MoreUtils::all { exists $lhs->{$_} } keys %{$hash} and [ @{$lhs}{keys %{$hash}} ] ~~ [ values %{$hash} ];
+	};
+}
+
+sub hashwise {
+	my $hash = shift;
+	return match { scalar hash and hash_keys([ keys %{$hash} ]) and [ @{$_}{keys %{$hash}} ] ~~ [ values %{$hash} ] };
+}
+
+sub value {
+	my $value = shift;
+	return $value if blessed($value);
+	given (ref $value) {
+		when ('') {
+			return $value;
+		}
+		when ('ARRAY') {
+			return tuple(map { value($_) } @{$value});
+		}
+		when ('HASH') {
+			my %match = map { ( $_ => value($value->{$_}) ) } keys %{$value};
+			return hashwise(\%match);
+		}
+		when ([qw/CODE SCALAR REF/]) {
+			return address($value);
+		}
+		when ([qw/GLOB IO FORMAT/]) {
+			croak "Can't match \L$_";
+		}
+		default {
+			croak "Don't know what you want me to do with a $_";
+		}
+	}
 }
 
 1;
@@ -222,14 +277,14 @@ Smart::Match - Smart matching utilities
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
 =head1 SYNOPSIS
 
  given ($foo) {
-     say 'We've got a positive number' when positive;
-     say 'We've got an array' when array;
-     say 'We've got a non-empty string' when string_length(positive);
+     say "We've got a positive number" when positive;
+     say "We've got an array" when array;
+     say "We've got a non-empty string" when string_length(positive);
  }
 
 =head1 DESCRIPTION
@@ -376,17 +431,25 @@ Matches a list whose head elements match C<@entries> one by one.
 
 Matches a list whose elements all match C<$matcher>.
 
-=head2 contains($matcher)
+=head2 contains(@matcher)
 
-Matches a list that contains an element matching C<$matcher>.
+Matches a list that for all of C<@matcher>s contains a matching element.
 
 =head2 sorted($matcher)
 
 Sorts a list and matches it against C<$matcher>.
 
+=head2 sorted_by($sorter, $matcher)
+
+Sorts a list using $sorter and matches it against C<$matcher>.
+
 =head2 hash()
 
 Matches any unblessed hash.
+
+=head2 hashwise($hashref)
+
+Matches a hash for against C<$hashref>. The keys must be identical, and all keys in the hash much smartmatch the keys in $hashref.
 
 =head2 hash_keys($matcher)
 
@@ -396,6 +459,10 @@ Match a list of hash keys against C<$matcher>.
 
 Match a list of hash values against C<$matcher>
 
+=head2 sub_hash({ key => $matcher, ... })
+
+Matches each hash entry against a the corresponding matcher.
+
 =head2 match { ... }
 
 Create a new matching function. It will be run with the left-hand side in C<$_>.
@@ -403,6 +470,14 @@ Create a new matching function. It will be run with the left-hand side in C<$_>.
 =head2 delegate { ... } $matcher
 
 Run the block, and then match the return value against C<$matcher>.
+
+=head2 address($var)
+
+Matches if the left hand side has the same address as $var.
+
+=head2 value
+
+This with match on recursive value equivalence. It will use other matchers such as tuple, hashwise and address to achieve this.
 
 =head1 AUTHOR
 
