@@ -1,6 +1,6 @@
 package Smart::Match;
-BEGIN {
-  $Smart::Match::VERSION = '0.004';
+{
+  $Smart::Match::VERSION = '0.005';
 }
 
 use 5.010001;
@@ -48,6 +48,18 @@ sub match (&) {
 	my $sub = shift;
 
 	return Smart::Match::Overload->new($sub);
+}
+
+sub _matchall (&@) {
+	my $sub = shift;
+	croak 'No arguments given to match' if not @_;
+	if (wantarray) {
+		return map { $sub->($_) } @_;
+	}
+	else {
+		croak 'Can\'t use multiple matchers in scalar context' if @_ > 1;
+		return $sub->($_[0]);
+	}
 }
 
 sub delegate (&@) {
@@ -138,8 +150,8 @@ use constant positive => more_than(0);
 use constant negative => less_than(0);
 
 sub numwise {
-	my $other = shift;
-	return match { scalar number and $_ == $other };
+	croak 'No number given' if not @_;
+	return _matchall { my $other = shift ; match { scalar number and $_ == $other } } @_;
 }
 
 use constant string => match { ref() ? blessed($_) && overload::OverloadedStringify($_) : defined };
@@ -150,8 +162,8 @@ sub string_length {
 }
 
 sub stringwise {
-	my $other = shift;
-	return match { scalar string and $_ eq $other };
+	croak 'No number given' if not @_;
+	return _matchall { my $other = shift; match { scalar string and $_ eq $other } } @_;
 }
 
 use constant object => match { blessed($_) };
@@ -277,7 +289,7 @@ Smart::Match - Smart matching utilities
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 SYNOPSIS
 
@@ -383,17 +395,17 @@ This is a synonym for C<less_than(0)>.
 
 A synonym for C<all(at_least($bottom, at_most($top))>.
 
-=head2 numwise($number)
+=head2 numwise($number, ...)
 
-Matches the left hand side numerically with $number if that makes sense, returns false otherwise.
+Matches the left hand side numerically with $number if that makes sense, returns false otherwise. If given multiple numbers it will return multiple matchers.
 
 =head2 string()
 
 Matches any string, that is any defined value that's that's not a reference without string overloading.
 
-=head2 stringwise($string)
+=head2 stringwise($string, ...)
 
-Matches the left hand side lexographically with $string if that makes sense, returns false otherwise.
+Matches the left hand side lexographically with $string if that makes sense, returns false otherwise. If given multiple strings it will return multiple matchers.
 
 =head2 string_length($matcher)
 

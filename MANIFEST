@@ -1,11 +1,11 @@
 Build.PL
 Changes
+INSTALL
 LICENSE
 MANIFEST
 META.json
 META.yml
 README
-SIGNATURE
 dist.ini
 lib/Smart/Match.pm
 lib/Smart/Match/Overload.pm
