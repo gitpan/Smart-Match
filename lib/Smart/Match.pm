@@ -1,11 +1,12 @@
 package Smart::Match;
 {
-  $Smart::Match::VERSION = '0.005';
+  $Smart::Match::VERSION = '0.006';
 }
 
 use 5.010001;
 use strict;
 use warnings FATAL => 'all';
+no if $] >= 5.017011, warnings => 'experimental::smartmatch';
 
 use Carp qw/croak/;
 use List::MoreUtils qw//;
@@ -13,7 +14,7 @@ use Scalar::Util qw(blessed looks_like_number refaddr);
 
 use Smart::Match::Overload;
 
-use Sub::Exporter -setup => {
+use Sub::Exporter::Progressive -setup => {
 	exports => [qw/
 		match delegate
 		always never
@@ -289,7 +290,7 @@ Smart::Match - Smart matching utilities
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 SYNOPSIS
 

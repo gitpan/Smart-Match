@@ -1,6 +1,6 @@
 package Smart::Match::Overload;
 {
-  $Smart::Match::Overload::VERSION = '0.005';
+  $Smart::Match::Overload::VERSION = '0.006';
 }
 use strict;
 use warnings FATAL => 'all';
@@ -35,7 +35,7 @@ Smart::Match::Overload
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 METHODS
 
