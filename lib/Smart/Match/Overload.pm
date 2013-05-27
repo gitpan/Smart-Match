@@ -1,6 +1,6 @@
 package Smart::Match::Overload;
 {
-  $Smart::Match::Overload::VERSION = '0.006';
+  $Smart::Match::Overload::VERSION = '0.007';
 }
 use strict;
 use warnings FATAL => 'all';
@@ -25,7 +25,7 @@ sub new {
 
 # A class for closure based matcher objects.
 
-
+__END__
 
 =pod
 
@@ -35,7 +35,7 @@ Smart::Match::Overload
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 METHODS
 
@@ -55,7 +55,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-
-__END__
-

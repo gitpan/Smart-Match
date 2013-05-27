@@ -1,12 +1,12 @@
 package Smart::Match;
 {
-  $Smart::Match::VERSION = '0.006';
+  $Smart::Match::VERSION = '0.007';
 }
 
 use 5.010001;
 use strict;
 use warnings FATAL => 'all';
-no if $] >= 5.017011, warnings => 'experimental::smartmatch';
+use experimental 'smartmatch';
 
 use Carp qw/croak/;
 use List::MoreUtils qw//;
@@ -247,7 +247,7 @@ sub sub_hash {
 
 sub hashwise {
 	my $hash = shift;
-	return match { scalar hash and hash_keys([ keys %{$hash} ]) and [ @{$_}{keys %{$hash}} ] ~~ [ values %{$hash} ] };
+	return match { scalar hash and hash_keys(sorted([ sort keys %{$hash} ])) and [ @{$_}{keys %{$hash}} ] ~~ [ values %{$hash} ] };
 }
 
 sub value {
@@ -280,7 +280,7 @@ sub value {
 
 # ABSTRACT: Smart matching utilities
 
-
+__END__
 
 =pod
 
@@ -290,7 +290,7 @@ Smart::Match - Smart matching utilities
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 SYNOPSIS
 
@@ -504,7 +504,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-
-__END__
-

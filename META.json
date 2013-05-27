@@ -4,7 +4,7 @@
       "Leon Timmermans <leont@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.300033, CPAN::Meta::Converter version 2.130880",
+   "generated_by" : "Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "perl_5"
    ],
@@ -14,14 +14,9 @@
    },
    "name" : "Smart-Match",
    "prereqs" : {
-      "build" : {
-         "requires" : {
-            "Module::Build" : "0.3601"
-         }
-      },
       "configure" : {
          "requires" : {
-            "Module::Build" : "0.3601"
+            "Module::Build::Tiny" : "0.021"
          }
       },
       "develop" : {
@@ -39,7 +34,7 @@
             "Sub::Exporter::Progressive" : "0",
             "XSLoader" : "0",
             "constant" : "0",
-            "if" : "0",
+            "experimental" : "0",
             "overload" : "0",
             "perl" : "5.010001",
             "strict" : "0",
@@ -63,9 +58,9 @@
       "repository" : {
          "type" : "git",
          "url" : "git://github.com/Leont/smart-match.git",
-         "web" : "http://github.com/Leont/smart-match"
+         "web" : "https://github.com/Leont/smart-match"
       }
    },
-   "version" : "0.006"
+   "version" : "0.007"
 }
 

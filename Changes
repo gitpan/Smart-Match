@@ -1,5 +1,10 @@
 Revision history for Smart-Match
 
+0.007     2013-05-27 17:12:32 Europe/Amsterdam
+          Take into account hash randomization
+          Switch to Module::Build::Tiny
+          Really surpress experimental warnings
+
 0.006     2013-05-14 20:25:41 Europe/Amsterdam
           Switched to Sub::Exporter::Progressive
           Disable smartmatch warning on 5.17.11+
